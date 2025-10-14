@@ -10,13 +10,14 @@ import {
 } from "./page"
 import MainLayout from "@/components/common/main_layout"
 import { Route } from "react-router"
+import { IconBrandHbo, IconCalendarWeek, IconLayoutDashboard, IconMovie, type Icon, type IconProps } from "@tabler/icons-react";
 
 export type PageLink = {
     href?: string
     name?: string
     parameter?: string
     component?: React.ReactNode
-    icon?: React.ReactNode
+    icon?: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<Icon>>
     layout?: React.ReactNode
     childs?: Record<string, PageLink>
     isMenu?: boolean
@@ -39,6 +40,7 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
                         name: "Thống kê",
                         component: <DashboardPage />,
                         isMenu: true,
+                        icon: IconLayoutDashboard,
                     },
                 }
             },
@@ -55,6 +57,7 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
                         parameter: "id",
                         component: <ManagerFilmPage />,
                         isMenu: true,
+                        icon: IconBrandHbo,
                     },
                     MOVIE_THEATER: {
                         href: "rap-phim",
@@ -62,6 +65,7 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
                         parameter: "id",
                         component: <ManagerMovieTheaterPage />,
                         isMenu: true,
+                        icon: IconMovie,
                         childs: {
                             CINEMA_ROOM: {
                                 href: "phong-chieu",
@@ -77,6 +81,7 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
                         parameter: "id",
                         component: <ManagerShowtimePage />,
                         isMenu: true,
+                        icon: IconCalendarWeek,
                     },
                 },
             },

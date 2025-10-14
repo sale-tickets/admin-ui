@@ -6,13 +6,16 @@ import { BaseTheme } from './theme/base.ts';
 import '@mantine/core/styles.css';
 import './index.css';
 import { BrowserRouter } from 'react-router';
+import { MotionConfig } from 'framer-motion';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <MantineProvider theme={BaseTheme}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <MotionConfig transition={{ duration: 0.2 }}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </MotionConfig>
     </MantineProvider>
   </StrictMode>,
 )
