@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "./header";
 import { Outlet } from "react-router";
-import { Group } from "@mantine/core";
+import { Box, Group } from "@mantine/core";
 
 
 
@@ -9,9 +9,18 @@ const MainLayout: React.FC = () => {
     return (
         <Group
             h={"100%"}
+            gap={0}
         >
             <Header />
-            <Outlet />
+            <Box
+                style={{
+                    flex: 1,
+                    height: "100%",
+                    padding: 8,
+                }}
+            >
+                <Outlet />
+            </Box>
         </Group>
     )
 }
