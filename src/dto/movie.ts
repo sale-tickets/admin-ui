@@ -1,6 +1,9 @@
+import type { MovieModel } from "@/model/movie"
+
 export type CreateMovieReq = {
-    name: string
-    category: string[]
-    description: string
-    thumbnail: string
+    data: MovieModel
+}
+
+export type CreateMovieRes = {
+    data: MovieModel
 }

@@ -4,12 +4,12 @@ import type { UploadFileMinioReq } from "@/dto/minio"
 
 export const minioApi = createApi({
     reducerPath: "minioApi",
-    baseQuery: axiosBaseQuery({ baseUrl: "http://127.0.0.1:9000" }),
+    baseQuery: axiosBaseQuery({ baseUrl: "http://172.17.8.248:30900" }),
     endpoints: (build) => ({
         UploadFiles: build.mutation<any, UploadFileMinioReq>({
             query: (payload) => ({
                 headers: {
-                    "Content-Type": payload.type,  
+                    "Content-Type": payload.type,
                 },
                 method: "PUT",
                 url: payload.path,

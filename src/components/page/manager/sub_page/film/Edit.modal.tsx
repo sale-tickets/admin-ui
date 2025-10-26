@@ -1,9 +1,10 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
-import { Button, FileInput, Group, Modal, MultiSelect, Stack, Text, Textarea, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import type { CreateMovieReq } from "@/dto/movie";
 import { useCreateSignedObjectMutation } from "@/store/api/file_api";
 import { useUploadFilesMutation } from "@/store/api/minio";
-import type { CreateMovieReq } from "@/dto/movie";
+import { useCreateMovieMutation } from "@/store/api/movie";
+import { Button, FileInput, Group, Modal, MultiSelect, Stack, Text, Textarea, TextInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 
 
@@ -16,8 +17,9 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
     const [open, setOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const [createApi] = useCreateSignedObjectMutation();
+    const [createSigned] = useCreateSignedObjectMutation();
     const [uploadMinio] = useUploadFilesMutation();
+    const [createMovie] = useCreateMovieMutation();
 
     const form = useForm<FormEditFilm>({
         initialValues: DefaultFormEditFilm,
@@ -36,12 +38,15 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
 
     const handleUploadImage = async (values: FormEditFilm) => {
         let movie: CreateMovieReq = {
-            ...values,
-            thumbnail: "",
+            data: {
+                ...values,
+                thumbnail: "",
+                category_id: values.category,
+            }
         };
 
         if (values.thumbnail) {
-            const resultCreateSigned = await createApi({
+            const resultCreateSigned = await createSigned({
                 data: [
                     {
                         model: "",
@@ -64,16 +69,23 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
                 type: values.thumbnail.type,
             });
 
-            if(result.error) {
+            if (result.error) {
                 return;
             }
 
             movie = {
-                ...movie,
-                thumbnail: `http://localhost:9000${filePaths.path}`,
+                data: {
+                    ...movie.data,
+                    thumbnail: `http://172.17.8.248:30900${filePaths.path}`,
+                },
             }
         }
-        console.log("DATA: ", movie);
+
+        const result = await createMovie({
+            ...movie,
+        });
+
+        console.log(result);
     }
 
 

@@ -68,6 +68,7 @@ export const BaseTheme: MantineThemeOverride = {
         Button: {
             defaultProps: {
                 radius: "md",
+                size: "sm",
             } as ButtonProps
         },
         TextInput: {

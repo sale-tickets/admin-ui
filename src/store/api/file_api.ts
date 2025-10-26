@@ -4,7 +4,7 @@ import type { CreateFileReq, CreateFileRes } from "@/dto/file_api"
 
 export const fileApi = createApi({
     reducerPath: "fileApi",
-    baseQuery: axiosBaseQuery({ baseUrl: "http://localhost:8001/api/v1/file-api" }),
+    baseQuery: axiosBaseQuery({ baseUrl: "http://172.17.8.248:30800/api/v1/file-api" }),
     endpoints: (build) => ({
         CreateSignedObject: build.mutation<CreateFileRes, CreateFileReq>({
             query: (payload) => ({
