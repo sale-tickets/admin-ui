@@ -15,7 +15,7 @@ import { IconBrandHbo, IconCalendarWeek, IconLayoutDashboard, IconMovie, type Ic
 export type PageLink = {
     href?: string
     name?: string
-    parameter?: string
+    // parameter?: string
     component?: React.ReactNode
     icon?: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<Icon>>
     layout?: React.ReactNode
@@ -54,7 +54,6 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
                     FILM: {
                         href: "phim",
                         name: "Quản lí phim",
-                        parameter: "id",
                         component: <ManagerFilmPage />,
                         isMenu: true,
                         icon: IconBrandHbo,
@@ -62,15 +61,13 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
                     MOVIE_THEATER: {
                         href: "rap-phim",
                         name: "Quản lí rạp phim",
-                        parameter: "id",
                         component: <ManagerMovieTheaterPage />,
                         isMenu: true,
                         icon: IconMovie,
                         childs: {
                             CINEMA_ROOM: {
-                                href: "phong-chieu",
+                                href: ":movie_theater_id",
                                 name: "Quản lí phòng chiếu",
-                                parameter: "id",
                                 component: <ManagerCinemaRoomPage />,
                             },
                         }
@@ -78,7 +75,6 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
                     SHOWTIME: {
                         href: "suat-chieu",
                         name: "Quản lí suất chiếu",
-                        parameter: "id",
                         component: <ManagerShowtimePage />,
                         isMenu: true,
                         icon: IconCalendarWeek,
@@ -90,39 +86,48 @@ export const PAGE_LINK_APP: Record<string, PageLink> = {
 }
 
 export const renderRouter = (links: Record<string, PageLink>) => {
-        const listPage: PageLink[] = [];
-        Object.keys(links).forEach(key => {
-            listPage.push(links[key]);
-        })
+    const listPage: PageLink[] = [];
+    Object.keys(links).forEach(key => {
+        listPage.push(links[key]);
+    })
 
-        return (
-            <React.Fragment>
-                {
-                    listPage.map(page => {
-                        if (!page.childs) {
-                            return <Route path={page.href} element={page.component} />
-                        }
-                        if (!page.layout) {
-                            return (
-                                <React.Fragment>
-                                    {(page.component && page.href) && <Route path={page.href} element={page.component} />}
-                                    <Route path={page.href}>
-                                        {renderRouter(page.childs)}
-                                    </Route>
-                                </React.Fragment>
-                            )
-                        }
+    const renderHref = (page: PageLink) => {
+        let href = page.href;
+        // if (page.parameter) {
+        //     href = href + `/${page.parameter}`;
+        // }
+        return href;
+    }
 
+    return (
+        <React.Fragment>
+            {
+                listPage.map(page => {
+                    if (!page.childs) {
+                        return <Route path={renderHref(page)} element={page.component} />
+                    }
+
+                    if (!page.layout) {
                         return (
                             <React.Fragment>
-                                {(page.component && page.href) && <Route path={page.href} element={page.component} />}
-                                <Route path={page.href} element={page.layout}>
+                                {(page.component && page.href) && <Route path={renderHref(page)} element={page.component} />}
+                                <Route path={renderHref(page)}>
                                     {renderRouter(page.childs)}
                                 </Route>
                             </React.Fragment>
                         )
-                    })
-                }
-            </React.Fragment>
-        )
-    }
+                    }
+
+                    return (
+                        <React.Fragment>
+                            {(page.component && page.href) && <Route path={renderHref(page)} element={page.component} />}
+                            <Route path={renderHref(page)} element={page.layout}>
+                                {renderRouter(page.childs)}
+                            </Route>
+                        </React.Fragment>
+                    )
+                })
+            }
+        </React.Fragment>
+    )
+}

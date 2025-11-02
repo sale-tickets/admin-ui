@@ -1,7 +1,9 @@
+import { MOVIE_CATEGORY } from "@/constant/movie";
 import type { CreateMovieReq } from "@/dto/movie";
 import { useCreateSignedObjectMutation } from "@/store/api/file_api";
 import { useUploadFilesMutation } from "@/store/api/minio";
 import { useCreateMovieMutation } from "@/store/api/movie";
+import { showNoti } from "@/utils/noti";
 import { Button, FileInput, Group, Modal, MultiSelect, Stack, Text, Textarea, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { forwardRef, useImperativeHandle, useState } from "react";
@@ -12,8 +14,10 @@ export type EditFilmModalRef = {
     onOpen: () => void
     onClose: () => void
 }
-export type EditFilmModalProps = {}
-export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_, ref) => {
+export type EditFilmModalProps = {
+    onReload: () => void
+}
+export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((props, ref) => {
     const [open, setOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -26,14 +30,24 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
     });
 
     useImperativeHandle(ref, () => ({
-        onOpen: () => setOpen(true),
-        onClose: () => setOpen(false),
+        onOpen: handleOpen,
+        onClose: handleClose,
     }));
+
+    const handleOpen = () => {
+        setOpen(true);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+        form.reset();
+    }
 
     const handleSubmit = async (values: FormEditFilm) => {
         setLoading(true);
         await handleUploadImage(values);
         setLoading(false);
+        props.onReload();
     }
 
     const handleUploadImage = async (values: FormEditFilm) => {
@@ -41,7 +55,7 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
             data: {
                 ...values,
                 thumbnail: "",
-                category_id: values.category,
+                categoryId: values.category,
             }
         };
 
@@ -79,13 +93,20 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
                     thumbnail: `http://172.17.8.248:30900${filePaths.path}`,
                 },
             }
+            setOpen(false);
+            form.reset();
         }
 
         const result = await createMovie({
             ...movie,
         });
 
-        console.log(result);
+        if (result.error) {
+            showNoti("error");
+            return;
+        }
+        showNoti("success");
+        handleClose();
     }
 
 
@@ -107,11 +128,7 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
                     />
                     <MultiSelect
                         label="Thể loại"
-                        data={[
-                            { label: "1", value: "1" },
-                            { label: "2", value: "2" },
-                            { label: "3", value: "3" },
-                        ]}
+                        data={MOVIE_CATEGORY}
                         {...form.getInputProps("category")}
                     />
                     <Textarea
@@ -128,7 +145,11 @@ export const EditFilmModal = forwardRef<EditFilmModalRef, EditFilmModalProps>((_
                 </Stack>
             </form>
             <Group mt={16}>
-                <Button flex={1} variant="outline">Hủy</Button>
+                <Button
+                    flex={1}
+                    onClick={handleClose}
+                    variant="outline"
+                >Hủy</Button>
                 <Button
                     flex={1}
                     type="submit"

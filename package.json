@@ -39,6 +39,7 @@
     "embla-carousel": "^8.5.2",
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.23.24",
+    "lucide-react": "^0.552.0",
     "motion": "^12.23.24",
     "pusher-js": "^8.4.0",
     "react": "^19.1.1",
